@@ -11,7 +11,8 @@ const getJobs = async (req, res) => {
     if (!isDBConnected()) {
       return res.status(503).json({
         success: false,
-        message: "Database connection unavailable. Please check MongoDB Atlas configuration.",
+        message:
+          "Database connection unavailable. Please check MongoDB Atlas configuration.",
         error: "Service temporarily unavailable",
         details: "Verify MongoDB Atlas IP whitelist and connection string",
       });

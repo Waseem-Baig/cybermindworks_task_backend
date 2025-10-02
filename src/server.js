@@ -83,6 +83,36 @@ app.get("/health", (req, res) => {
   });
 });
 
+// Debug endpoint (only for development/troubleshooting)
+app.get("/debug", async (req, res) => {
+  const { isDBConnected } = require("./config/database");
+  const mongoose = require("mongoose");
+  
+  res.status(200).json({
+    success: true,
+    message: "Debug information",
+    environment: process.env.NODE_ENV,
+    database: {
+      connected: isDBConnected(),
+      readyState: mongoose.connection.readyState,
+      readyStateDescription: {
+        0: "disconnected",
+        1: "connected", 
+        2: "connecting",
+        3: "disconnecting"
+      }[mongoose.connection.readyState],
+      host: mongoose.connection.host || "not connected",
+      name: mongoose.connection.name || "not connected"
+    },
+    env_check: {
+      mongodb_uri_exists: !!process.env.MONGODB_URI,
+      mongodb_uri_length: process.env.MONGODB_URI?.length || 0,
+      mongodb_uri_starts_with: process.env.MONGODB_URI?.substring(0, 20) + "..." || "undefined"
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // API routes
 app.use("/api/jobs", jobRoutes);
 
