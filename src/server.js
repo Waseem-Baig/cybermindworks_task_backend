@@ -45,7 +45,8 @@ const corsOptions = {
     if (!origin) return callback(null, true);
 
     const allowedOrigins = [
-      process.env.FRONTEND_URL || "http://localhost:8080",
+      process.env.FRONTEND_URL,
+      "http://localhost:8080",
       "http://localhost:3000", // Common React dev server
       "http://localhost:5173", // Vite dev server
     ];
@@ -92,21 +93,24 @@ app.get("/debug", async (req, res) => {
   let connectionTest = null;
   try {
     // Test connection manually with quick timeout
-    const testConnection = await mongoose.createConnection(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000, // 5 seconds for quick test
-    });
+    const testConnection = await mongoose.createConnection(
+      process.env.MONGODB_URI,
+      {
+        serverSelectionTimeoutMS: 5000, // 5 seconds for quick test
+      }
+    );
     connectionTest = {
       success: true,
       host: testConnection.host,
-      name: testConnection.name
+      name: testConnection.name,
     };
     await testConnection.close();
   } catch (error) {
     connectionTest = {
       success: false,
       error: error.message,
-      errorCode: error.code || 'unknown',
-      errorName: error.name || 'unknown'
+      errorCode: error.code || "unknown",
+      errorName: error.name || "unknown",
     };
   }
 
@@ -125,18 +129,19 @@ app.get("/debug", async (req, res) => {
       }[mongoose.connection.readyState],
       host: mongoose.connection.host || "not connected",
       name: mongoose.connection.name || "not connected",
-      connectionTest: connectionTest
+      connectionTest: connectionTest,
     },
     env_check: {
       mongodb_uri_exists: !!process.env.MONGODB_URI,
       mongodb_uri_length: process.env.MONGODB_URI?.length || 0,
       mongodb_uri_starts_with:
         process.env.MONGODB_URI?.substring(0, 20) + "..." || "undefined",
-      uri_includes_db_name: process.env.MONGODB_URI?.includes('/jobboard') || false
+      uri_includes_db_name:
+        process.env.MONGODB_URI?.includes("/jobboard") || false,
     },
     vercel_info: {
-      vercel_env: process.env.VERCEL_ENV || 'not vercel',
-      vercel_region: process.env.VERCEL_REGION || 'unknown'
+      vercel_env: process.env.VERCEL_ENV || "not vercel",
+      vercel_region: process.env.VERCEL_REGION || "unknown",
     },
     timestamp: new Date().toISOString(),
   });
